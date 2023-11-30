@@ -1,0 +1,220 @@
+{
+  "protocol_version": 1,
+  "metadata": {
+    "name": "LOKIPROTOCOL",
+    "description": "Protocol for decentralized social networking actions",
+    "author": "Your Name or Organization",
+    "last_updated": "2023-11-05"
+  },
+  "constants": {
+    "BASE_DIFFICULTY": {
+      "value": 1,
+      "description": "The base difficulty for the proof of work required to register a user"
+    }
+  },
+  "key_schema": {
+    "user_friend_requests": {
+      "format": "{username}_friend_requests",
+      "description": "Stores the list of pending friend requests for the given username."
+    },
+    "user_friends": {
+      "format": "{username}_friends",
+      "description": "Stores the list of friends for the given username."
+    },
+    "user_friends_public_keys": {
+      "format": "{username}_friends_public_keys",
+      "description": "Stores the public keys of the user's friends."
+    },
+    "user_password": {
+      "format": "{username}_password",
+      "description": "Stores the password for the given username."
+    },
+    "user_registration_time": {
+      "format": "{username}_registration_time",
+      "description": "Stores the registration time for the given username."
+    },
+    "user_posts_list": {
+      "format": "{username}_posts_list",
+      "description": "Stores the list of post keys for the given username."
+    },
+    "user_follows": {
+      "format": "{username}_follows",
+      "description": "Stores the list of usernames that the given user follows."
+    },
+    "user_blocked": {
+      "format": "{username}_blocked",
+      "description": "Stores the list of usernames that the given user has blocked."
+    },
+      "user_public_key": {
+    "format": "{username}_public_key",
+    "description": "Stores the public key for the given username."
+  }
+  },
+  "commands": {
+    "SEND_FRIEND_REQUEST": {
+      "description": "Send a friend request to another user",
+      "parameters": {
+        "username": {
+          "type": "string",
+          "description": "The username of the sender"
+        },
+        "target": {
+          "type": "string",
+          "description": "The username of the target to send a friend request to"
+        }
+      },
+      "response": {
+        "success": {
+          "message": "Friend request sent successfully"
+        },
+        "error": {
+          "message_template": "An error occurred: %s"
+        }
+      }
+    },
+    "ACCEPT_FRIEND_REQUEST": {
+      "description": "Accept a friend request from another user",
+      "parameters": {
+        "username": {
+          "type": "string",
+          "description": "The username of the acceptor"
+        },
+        "sender": {
+          "type": "string",
+          "description": "The username of the sender of the friend request"
+        }
+      },
+      "response": {
+        "success": {
+          "message": "Friend request accepted successfully"
+        },
+        "error": {
+          "message_template": "An error occurred: %s"
+        }
+      }
+    },
+    "REGISTER_USER": {
+      "description": "Register a new user with a username and password",
+      "parameters": {
+        "username": {
+          "type": "string",
+          "description": "The desired username"
+        },
+        "password": {
+          "type": "string",
+          "description": "The password for the user"
+        }
+      },
+      "response": {
+        "success": {
+          "message": "User registered successfully"
+        },
+        "error": {
+          "message_template": "An error occurred: %s"
+        }
+      }
+    },
+    "AUTHENTICATE_USER": {
+      "description": "Authenticate a user using their username and password",
+      "parameters": {
+        "username": {
+          "type": "string",
+          "description": "The username to authenticate"
+        },
+        "password": {
+          "type": "string",
+          "description": "The password for the user"
+        }
+      },
+      "response": {
+        "success": {
+          "message": "Authentication successful"
+        },
+        "error": {
+          "message_template": "An error occurred: %s"
+        }
+      }
+    },
+    "POST_CONTENT": {
+      "description": "Post content to a user's feed",
+      "parameters": {
+        "username": {
+          "type": "string",
+          "description": "The username of the poster"
+        },
+        "content": {
+          "type": "string",
+          "description": "The content to post"
+        }
+      },
+      "response": {
+        "success": {
+          "message": "Content posted successfully"
+        },
+        "error": {
+          "message_template": "An error occurred: %s"
+        }
+      }
+    },
+    "FOLLOW_USER": {
+      "description": "Follow another user's content feed",
+      "parameters": {
+        "username": {
+          "type": "string",
+          "description": "The username of the follower"
+        },
+        "target": {
+          "type": "string",
+          "description": "The username of the target to follow"
+        }
+      },
+      "response": {
+        "success": {
+          "message": "Now following user"
+        },
+        "error": {
+          "message_template": "An error occurred: %s"
+        }
+      }
+    },
+    "UNFOLLOW_USER": {
+      "description": "Unfollow another user's content feed",
+      "parameters": {
+        "username": {
+          "type": "string",
+          "description": "The username of the unfollower"
+        },
+        "target": {
+          "type": "string",
+          "description": "The username of the target to unfollow"
+        }
+      },
+      "response": {
+        "success": {
+          "message": "User unfollowed successfully"
+        },
+        "error": {
+          "message_template": "An error occurred: %s"
+        }
+      }
+    }
+  },
+  "errors": {
+    "1000": "Invalid protocol version",
+    "1001": "Unknown command",
+    "1002": "Missing parameters",
+    "1003": "Invalid action",
+    "1004": "Invalid JSON format",
+    "1005": "Authentication failed",
+    "1006": "Username already exists",
+    "1007": "Username not found",
+    "1008": "Invalid password",
+    "1009": "User not following target",
+    "1010": "User already following target",
+    "1011": "User already blocked",
+    "1012": "User had not blocked target",
+    "1013": "Friend request already sent",
+    "1014": "Friend request not found",
+    "1015": "User already a friend"
+  }
+}

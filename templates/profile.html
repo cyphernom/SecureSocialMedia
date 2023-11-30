@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    
+
+
+async function confirmUpdate() {
+    var username = "{{ profile['username'] }}";
+    
+    var data = {
+        name: document.getElementById('name').value,
+        occupation: document.getElementById('occupation').value,
+        location: document.getElementById('location').value,
+        birthday: document.getElementById('birthday').value,
+        interests: document.getElementById('interests').value.split(',')
+    };
+
+    try {
+        const response = await fetch(`/update_user_info/${username}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            // Handle successful update
+            alert("Profile updated successfully!");
+            // Update the profile display on the page
+            document.getElementById('label-name').textContent = data.name;
+            document.getElementById('label-occupation').textContent = data.occupation;
+            document.getElementById('label-location').textContent = data.location;
+            document.getElementById('label-birthday').textContent = data.birthday;
+            document.getElementById('label-interests').textContent = data.interests.join(', ');
+            toggleEdit()
+        } else {
+            alert("Failed to update profile.");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert("Failed to update the profile.");
+    }
+}
+
+  function toggleEdit() {
+    var isEditing = document.getElementById('update-info-form').style.display !== 'none';
+
+    if(isEditing) {
+        // Switch to display mode
+        document.getElementById('update-info-form').style.display = 'none';
+        document.getElementById('edit-button').innerText = 'Edit';
+    } else {
+        // Switch to edit mode
+        document.getElementById('update-info-form').style.display = 'block';
+        document.getElementById('edit-button').innerText = 'Cancel';
+    }
+}
+async function updatePic() {
+    var username = "{{ profile['username'] }}";
+    var formData = new FormData(document.getElementById('profile-picture-form'));
+
+    try {
+        const response = await fetch(`/upload_profile_picture/${username}`, {
+            method: 'POST',
+            body: formData  // Send formData directly without JSON.stringify
+        });
+
+        if(response.ok) {
+            // Reload the profile picture
+            document.getElementById('profile-picture').src = `/get_profile_picture/${username}`;
+            alert("Profile picture updated successfully!");
+            
+        } else {
+            alert("Failed to upload the profile picture.");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert("Failed to upload the profile picture.");
+    }
+}
+async function logoutUser() {
+    try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if (response.ok) {
+            alert('Logged out successfully');
+            window.location.href = '/'; // Redirect to login page or home page
+        } else {
+            alert('Failed to logout');
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        alert('Error logging out');
+    }
+}
+
+
+  </script>
+    <title>{{ profile['username'] }}'s Profile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
+        /* Style for the textarea */
+        #postInput {
+            width: 100%; /* Make textarea take full width */
+            box-sizing: border-box; /* Include padding and border in the width */
+            min-height: 100px; /* Set a minimum height */
+            resize: vertical; /* Allow vertical resizing, remove this if you don't want users to resize */
+        }
+
+        /* Additional styling to make the button align nicely */
+        .w3-container .w3-button {
+            margin-top: 10px; /* Space between textarea and button */
+        }
+
+    </style>
+</head>
+<body class="w3-theme-l5">
+
+
+
+<!-- Page Container -->
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">    
+  <!-- The Grid -->
+  <div class="w3-row">
+    <!-- Left Column -->
+    <div class="w3-col m3">
+      <!-- Profile -->
+      <div class="w3-card w3-round w3-white">
+        <div class="w3-container">
+         <h4 class="w3-center">My Profile</h4>
+         <p class="w3-center">
+          <img src="/get_profile_picture/{{ profile['username'] }}" class="w3-circle" style="height:106px;width:106px" alt="Profile Picture" id="profile-picture">
+          </p>
+        <!-- Profile Picture Upload Form -->
+        <form id="profile-picture-form" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*">
+            <button type="button" onclick="updatePic()">Upload</button>
+        </form>
+
+
+
+         <hr>
+          <!-- Dynamic display of profile information -->
+          <p id="display-name"><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> <span id="label-name">{{ profile['name'] }}</span></p>
+          <p id="display-occupation"><i class="fa fa-briefcase fa-fw w3-margin-right w3-text-theme"></i> <span id="label-occupation">{{ profile['occupation'] }}</span></p>
+          <p id="display-location"><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> <span id="label-location">{{ profile['location'] }}</span></p>
+          <p id="display-birthday"><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> <span id="label-birthday">{{ profile['birthday'] }}</span></p>
+          <p id="display-interests"><i class="fa fa-heart fa-fw w3-margin-right w3-text-theme"></i> <span id="label-interests">{{ profile['interests'] | join(', ') }}</span></p>
+
+          <!-- Edit button -->
+          <button id="edit-button" onclick="toggleEdit()">Edit</button>
+
+          <!-- Update form (initially hidden) -->
+          <form id="update-info-form" method="post" action="javascript:updateUserInfo();" style="display: none;">
+              <input type="text" id="name" placeholder="Name" value="{{ profile['name'] }}"><br>
+              <input type="text" id="occupation" placeholder="Occupation" value="{{ profile['occupation'] }}"><br>
+              <input type="text" id="location" placeholder="Location" value="{{ profile['location'] }}"><br>
+              <input type="text" id="birthday" placeholder="Birthday" value="{{ profile['birthday'] }}"><br>
+              <input type="text" id="interests" placeholder="Interests" value="{{ profile['interests'] | join(', ') }}"><br>
+              <button type="button" onclick="confirmUpdate()">Update Info</button>
+
+          </form>
+        </div>
+      </div>
+      <br>
+      
+      <!-- Add this in a suitable place in your HTML -->
+<button onclick="logoutUser()" class="w3-button w3-red">Logout</button>
+
+    
+    <!-- End Left Column -->
+    </div>
+    
+    <!-- Middle Column -->
+    <div class="w3-col m7">
+    
+  <div class="w3-row-padding">
+    <div class="w3-col m12">
+      <div class="w3-card w3-round w3-white">
+        <div class="w3-container w3-padding">
+          <h6 class="w3-opacity">Super Fun Happy mates</h6>
+          
+
+          
+          
+          <textarea id="postInput" class="w3-border w3-padding" placeholder="What's on your mind?"></textarea><br>
+          <button type="button" class="w3-button w3-theme" onclick="submitPost()"><i class="fa fa-pencil"></i> Post</button> 
+        </div>
+      </div>
+    </div>
+  </div>
+       <h4 class="w3-center">The Feed</h4><hr>     
+         <div id="timeline">
+    <!-- Posts will be dynamically added here -->
+  </div> 
+
+
+    <!-- End Middle Column -->
+    </div>
+    
+    <!-- Right Column -->
+    <div class="w3-col m2">
+      
+     <div class="w3-card w3-round w3-white w3-center">
+    <div class="w3-container">
+      <h4>My mates</h4>
+      <ul id="friends-list">
+        <!-- Dynamically populated list of friends will go here -->
+      </ul>
+    </div>
+  </div>      
+
+
+<div class="w3-card w3-round w3-white w3-center">
+  <div class="w3-container">
+    <h4>mate Requests</h4> <br> <button id="addfriend-button" onclick="addNewFriend()">Add mate</button><br>
+    <div id="friend-requests">
+      <!-- Dynamically populated friend requests will go here -->
+    </div>
+  </div>
+</div>
+
+    <!-- End Right Column -->
+    </div>
+    
+  <!-- End Grid -->
+  </div>
+  
+<!-- End Page Container -->
+</div>
+<br>
+
+
+<script>
+
+
+
+async function loadFriendRequests() {
+  const username = "{{ profile['username'] }}";
+  try {
+    const response = await fetch(`/get_friend_requests/${username}`);
+    if (response.ok) {
+      const data = await response.json();
+      console.log("load friends:" + data.friend_requests)
+      const requests = data.friend_requests;
+      const requestsElement = document.getElementById('friend-requests');
+      requestsElement.innerHTML = ''; // Clear existing requests
+      requests.forEach(request => {
+        const friendUsername = request;
+        requestsElement.innerHTML += `
+          <div class="w3-container">
+            <p>mate Request</p>
+            <img src="/get_profile_picture/${friendUsername}" alt="Avatar" style="width:50%"><br>
+            <span>${friendUsername}</span>
+            <div class="w3-row w3-opacity">
+              <div class="w3-half">
+                <button class="w3-button w3-block w3-green w3-section" onclick="acceptFriendRequest('${friendUsername}')"><i class="fa fa-check"></i></button>
+              </div>
+              <div class="w3-half">
+                <button class="w3-button w3-block w3-red w3-section" onclick="rejectFriendRequest('${friendUsername}')"><i class="fa fa-remove"></i></button>
+              </div>
+            </div>          
+          </div>`;
+      });
+    } else {
+      console.error("Failed to load friend requests");
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+async function acceptFriendRequest(friendUsername) {
+  const username = "{{ profile['username'] }}";
+  try {
+    const response = await fetch(`/accept_friend_request/${username}/${friendUsername}`, { method: 'POST' });
+    if (response.ok) {
+      alert("mate request accepted");
+      loadFriends(); // Reload friends list
+      loadFriendRequests(); // Reload friend requests\
+      loadCombinedTimeline();
+    } else {
+      alert("Failed to accept mate request");
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert("Error accepting mate request");
+  }
+}
+
+async function rejectFriendRequest(friendUsername) {
+  const username = "{{ profile['username'] }}";
+  try {
+    const response = await fetch(`/reject_friend_request/${username}/${friendUsername}`, { method: 'POST' });
+    if (response.ok) {
+      alert("mate request rejected");
+        loadFriendRequests(); // Reload friend requests to show the new one
+        loadFriends();
+    } else {
+      alert("Failed to reject mate request");
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert("Error rejecting mate request");
+  }
+}
+
+async function loadFriends() {
+  const username = "{{ profile['username'] }}";
+  try {
+    const response = await fetch(`/get_friends/${username}`);
+    if (response.ok) {
+      const data = await response.json();
+      console.log('mates Response:', data); // Debugging log
+
+      // Assuming the server response structure is { friends: [array of friends] }
+      const friends = data.friends;
+      const friendsListElement = document.getElementById('friends-list');
+      friendsListElement.innerHTML = ''; // Clear existing list
+      friends.forEach(friend => {
+        friendsListElement.innerHTML += `
+          <div class="w3-container">
+            <img src="/get_profile_picture/${friend}" alt="${friend}'s gay pic" class="w3-circle" style="width:50px; height:50px; margin-right: 10px;">
+            <span>${friend}</span>
+          </div>`;
+      });
+    } else {
+      console.error("Failed to load friends");
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+async function fetchFriends(username) {
+    try {
+        const response = await fetch(`/get_friends/${username}`);
+        if (response.ok) {
+            const data = await response.json();
+            return data.friends; // Assuming the response structure is { friends: [array of friends] }
+        } else {
+            console.error("Failed to load friends list");
+            return []; // Return an empty array in case of failure
+        }
+    } catch (error) {
+        console.error('Error fetching friends:', error);
+        return []; // Return an empty array in case of error
+    }
+}
+
+
+
+async function addNewFriend() {
+  const username = "{{ profile['username'] }}";
+  const friendUsername = prompt("Enter the username of the mate you want to add:");
+
+  if (friendUsername) {
+    try {
+      const response = await fetch(`/send_friend_request/${username}/${friendUsername}`, { method: 'POST' });
+      if (response.ok) {
+        alert("mate request sent!");
+        loadFriendRequests(); // Reload friend requests to show the new one
+        loadFriends();
+      } else {
+        alert("Failed to send mate request");
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert("Error sending mate request");
+    }
+  }
+}
+
+
+
+
+async function loadCombinedTimeline() {
+    const username = "{{ profile['username'] }}";
+    const friends = await fetchFriends(username);
+
+    const data = {
+        usernames: [username, ...friends],
+        current_user: username
+    };
+
+    try {
+        const response = await fetch(`/get_combined_timeline`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const timeline = data.timeline;
+            const timelineElement = document.getElementById('timeline');
+            timelineElement.innerHTML = '';
+
+            timeline.forEach(post => {
+                const postDate = new Date(post.date_posted);
+                const formattedDate = postDate.toLocaleString(); // Format date as needed
+                const postHtml = `
+                  <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                    <img src="${post.profile_picture_url}" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                    <span class="w3-right w3-opacity">${formattedDate}</span>
+                    <h4>${post.username}</h4><br>
+                    <hr class="w3-clear">
+                    <p>${post.content}</p>
+                  </div>`;
+                timelineElement.innerHTML += postHtml;
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+function adjustTextareaHeight(id) {
+    var textarea = document.getElementById(id);
+    textarea.style.height = ''; // Reset the height
+    textarea.style.height = Math.min(textarea.scrollHeight, 500) + 'px'; // Adjust the height, max height of 500px
+}
+
+// Attach the adjustTextareaHeight function to the 'input' event of the textarea
+document.getElementById('postInput').addEventListener('input', function() {
+    adjustTextareaHeight('postInput');
+});
+
+async function submitPost() {
+
+    const username = "{{ profile['username'] }}";
+    const postContent = document.getElementById('postInput').value;
+
+  console.log(username)
+    try {
+        const response = await fetch(`/create_post/${username}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ post_content: postContent })
+        });
+
+        if (response.ok) {
+            alert("Post created successfully!");
+            loadCombinedTimeline();  // Refresh the timeline to show the new post
+        } else {
+            alert("Failed to create the post.");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert("Error submitting the post.");
+    }
+}
+
+
+
+
+// Call these functions to initially populate the friends, requests, and timeline
+window.onload = function() {
+      adjustTextareaHeight('postInput');
+    loadFriends();
+   loadFriendRequests();
+    loadCombinedTimeline();
+};
+
+
+</script>
+
+</body>
+</html> 

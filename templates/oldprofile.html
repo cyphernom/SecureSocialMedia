@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ profile['username'] }}'s Profile</title>
+    <!-- Add CSS for styling -->
+</head>
+<body>
+    <div class="profile-header">
+        <!-- Display Profile Picture -->
+        <img src="/get_profile_picture/{{ profile['username'] }}" alt="Profile Picture" id="profile-picture">
+        <h1>{{ profile['name'] }}</h1>
+
+        <!-- Profile Picture Upload Form -->
+        <form action="/upload_profile_picture/{{ profile['username'] }}" method="post" enctype="multipart/form-data" id="upload-form">
+            <input type="file" name="file" accept="image/*">
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <form action="/update_profile/{{ profile['username'] }}" method="post">
+        <div class="profile-info">
+            <label>Bio:</label>
+            <span class="editable-field" data-field="bio">{{ profile['bio'] }}</span><br><br>
+            <label>Favorite Band:</label>
+            <span class="editable-field" data-field="favorite_band">{{ profile['favorite_band'] }}</span><br><br>
+            <label>Favorite Movie:</label>
+            <span class="editable-field" data-field="favorite_movie">{{ profile['favorite_movie'] }}</span><br><br>
+        </div>
+    </form>
+
+
+    <!-- Other profile sections -->
+</body>
+<script>
+        // JavaScript for inline editing
+        document.querySelectorAll('.editable-field').forEach(field => {
+            field.addEventListener('click', function() {
+                let input = document.createElement('input');
+                input.type = 'text';
+                input.value = this.innerText;
+                this.innerText = '';
+                this.appendChild(input);
+                input.focus();
+
+                input.addEventListener('blur', function() {
+                    let newValue = this.value;
+                    field.innerText = newValue;
+
+                    fetch(`/update_profile/${field.dataset.field}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ [field.dataset.field]: newValue })
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log('Updated:', data))
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+
+        // JavaScript for handling profile picture upload
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            fetch(`/upload_profile_picture/{{ profile['username'] }}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if(response.ok) {
+                    // Reload the profile picture
+                    document.getElementById('profile-picture').src = `/get_profile_picture/{{ profile['username'] }}?${new Date().getTime()}`;
+                    alert("Profile picture updated successfully!");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Failed to upload the profile picture.");
+            });
+        });
+</script>
+
+</html>
