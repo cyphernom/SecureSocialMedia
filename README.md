@@ -30,4 +30,5 @@ the DHT runs on the ports specified in the second parameter. the Fast server run
 If you deploy to a network, you can probably pre-set to a default port (the above is just to run on 1 computer)
 
 
-![Example run](Screenshot from 2024-01-08 14-58-06.png) 
+![Example run](Screenshot%20from%202024-01-08%2014-58-06.png)
+
