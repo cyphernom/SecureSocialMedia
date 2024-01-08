@@ -29,3 +29,5 @@ initial testing:
 the DHT runs on the ports specified in the second parameter. the Fast server runs in the first parameter port. 
 If you deploy to a network, you can probably pre-set to a default port (the above is just to run on 1 computer)
 
+
+![Example run](Screenshot from 2024-01-08 14-58-06.png) 
