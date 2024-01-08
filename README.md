@@ -21,9 +21,11 @@ If you do deploy, recommend introducing a size filter on uploads to suit your ne
 <pre>
 initial testing: 
   running the initial bootstrap node: 
-    python main.py 8001 5000
+    python main.py 8000 5000
   connecting new nodes
    python main.py 8001 5001 127.0.0.1:5000 
 </pre>
-the protocol talks on 8001. each individual nodes page loads on their specified port (i.e. 5000, 5001 etc)
+
+the DHT runs on the ports specified in the second parameter. the Fast server runs in the first parameter port. 
+If you deploy to a network, you can probably pre-set to a default port (the above is just to run on 1 computer)
 
