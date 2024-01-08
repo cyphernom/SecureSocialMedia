@@ -12,3 +12,9 @@ the nature of this, the fact its store in a memory only encrypted dht, means it 
 
 there are no known instances of this running yet. 
 
+DHT Storage:
+larger data objects are chunked up into smaller peices. this process can be slow, but it is effectively unlimited (limited only by the memory capacity of the DHT itself)
+
+Retrieving large data is also slow, due to this reason. 
+
+If you do deploy, recommend introducing a size filter on uploads to suit your needs. 
