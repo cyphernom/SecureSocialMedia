@@ -18,3 +18,12 @@ larger data objects are chunked up into smaller peices. this process can be slow
 Retrieving large data is also slow, due to this reason. 
 
 If you do deploy, recommend introducing a size filter on uploads to suit your needs. 
+
+initial testing: 
+  running the initial bootstrap node: 
+    python main.py 8001 5000
+  connecting new nodes
+   python main.py 8001 5001 127.0.0.1:5000 
+
+the protocol talks on 8001. each individual nodes page loads on their specified port (i.e. 5000, 5001 etc)
+
